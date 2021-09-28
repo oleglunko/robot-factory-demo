@@ -14,5 +14,5 @@ public enum RobotDetail {
     RAM,
     HDD;
 
-    public static final List<RobotDetail> CASHED_VALUES = Arrays.asList(values());
+    public static final List<RobotDetail> VALUES = Arrays.asList(values());
 }
