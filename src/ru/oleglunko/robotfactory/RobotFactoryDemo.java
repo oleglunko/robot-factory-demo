@@ -28,6 +28,22 @@ public class RobotFactoryDemo {
         robotFactory.join();
         firstAssistant.join();
         secondAssistant.join();
+
+        var firstScientist = firstAssistant.getScientist();
+        var secondScientist = secondAssistant.getScientist();
+        System.out.println("==========================================");
+        System.out.println("RESULTS:");
+        System.out.printf("%s built %d robots!\n", firstScientist.getName(), firstScientist.buildRobot().size());
+        System.out.printf("%s built %d robots!\n", secondScientist.getName(), secondScientist.buildRobot().size());
+
+        if (firstScientist.buildRobot().size() == secondScientist.buildRobot().size()) {
+            System.out.printf("There are no losers!");
+        } else if (firstScientist.buildRobot().size() > secondScientist.buildRobot().size()) {
+            System.out.printf("Congrats! %s won!", firstScientist.getName());
+        } else {
+            System.out.printf("Congrats! %s won!", secondScientist.getName());
+        }
+
     }
 
     //TODO refactoring - will make it with Stream

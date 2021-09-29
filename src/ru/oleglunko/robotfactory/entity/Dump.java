@@ -21,14 +21,14 @@ public class Dump {
         return detail;
     }
 
+    public RobotDetail remove(int index) {
+        return dump.remove(index);
+    }
+
     public List<RobotDetail> removeAll() {
         List<RobotDetail> removedDetails = new ArrayList<>(dump);
         dump.clear();
         return removedDetails;
-    }
-
-    public RobotDetail remove(int index) {
-        return dump.remove(index);
     }
 
     public int size() {

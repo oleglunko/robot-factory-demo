@@ -26,7 +26,7 @@ public class Assistant extends Thread {
     public void run() {
         try {
             for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
-                List<RobotDetail> takenDetails = getRobotDetails();
+                List<RobotDetail> takenDetails = takeRobotDetails();
                 scientist.takeRobotDetails(takenDetails);
                 waitNextNight();
             }
@@ -35,7 +35,7 @@ public class Assistant extends Thread {
         }
     }
 
-    private List<RobotDetail> getRobotDetails() {
+    private List<RobotDetail> takeRobotDetails() {
         int countDetailsToTake = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
         List<RobotDetail> takenDetails = new ArrayList<>(MAX_DETAILS_COUNT);
         synchronized (dump.getLock()) {
@@ -47,10 +47,18 @@ public class Assistant extends Thread {
                     takenDetails.add(removedDetail);
                 }
             }
-            System.out.printf("%s's assistant took  %d next details: %s\n", scientist.getName(), takenDetails.size(), takenDetails);
+            if (takenDetails.isEmpty()) {
+                System.out.printf("%s's assistant didn't take details\n", scientist.getName());
+            } else {
+                System.out.printf("%s's assistant took %d next details: %s\n", scientist.getName(), takenDetails.size(), takenDetails);
+            }
         }
 
         return takenDetails;
+    }
+
+    public Scientist getScientist() {
+        return scientist;
     }
 
     private void waitNextNight() throws InterruptedException {
@@ -58,4 +66,5 @@ public class Assistant extends Thread {
             night.getLock().wait();
         }
     }
+
 }
