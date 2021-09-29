@@ -9,16 +9,19 @@ public class Night extends Thread {
 
     @Override
     public void run() {
-        for (int i = 0; i < RandomUtil.getValueWithoutZero(NightConstant.NIGHTS_AMOUNT); i++) {
+        for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
             synchronized (lock) {
                 try {
-                    System.out.printf("Night №%d started \n", (i + 1));
+                    System.out.printf("\n=================== \nNight №%d started \n", (i + 1));
                     lock.notifyAll();
                     lock.wait(NightConstant.NIGHT_DELAY);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+        }
+        synchronized (lock){
+            lock.notifyAll();
         }
     }
 

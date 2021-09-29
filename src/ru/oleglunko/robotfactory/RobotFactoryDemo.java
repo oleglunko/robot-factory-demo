@@ -1,6 +1,8 @@
 package ru.oleglunko.robotfactory;
 
 import ru.oleglunko.robotfactory.entity.RobotDetail;
+import ru.oleglunko.robotfactory.entity.Scientist;
+import ru.oleglunko.robotfactory.thread.Assistant;
 import ru.oleglunko.robotfactory.thread.Night;
 import ru.oleglunko.robotfactory.thread.RobotFactory;
 import ru.oleglunko.robotfactory.util.RandomUtil;
@@ -13,12 +15,19 @@ public class RobotFactoryDemo {
     public static void main(String[] args) throws InterruptedException {
         Night night = new Night();
         var robotFactory = new RobotFactory(night, getInitRobortDetails());
+        var firstAssistant = new Assistant(new Scientist("Max"), night, robotFactory.getDump());
+        var secondAssistant = new Assistant(new Scientist("Andrew"), night, robotFactory.getDump());
 
         night.start();
         robotFactory.start();
+        firstAssistant.start();
+        secondAssistant.start();
+
 
         night.join();
         robotFactory.join();
+        firstAssistant.join();
+        secondAssistant.join();
     }
 
     //TODO refactoring - will make it with Stream

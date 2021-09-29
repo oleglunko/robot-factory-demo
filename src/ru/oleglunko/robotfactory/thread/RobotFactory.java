@@ -5,6 +5,7 @@ import ru.oleglunko.robotfactory.entity.RobotDetail;
 import ru.oleglunko.robotfactory.util.NightConstant;
 import ru.oleglunko.robotfactory.util.RandomUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RobotFactory extends Thread {
@@ -18,25 +19,37 @@ public class RobotFactory extends Thread {
         this.dump = new Dump(initRobotDetails);
     }
 
-    //TODO refactoring - make 2 methods
     @Override
     public void run() {
-        for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
-            synchronized (dump.getLock()) {
-                int countToTossNewRobotDetails = RandomUtil.getValue(MAX_DETAILS_COUNT);
-                for (int j = 0; j < countToTossNewRobotDetails ; j++) {
-                    var robotDetail = RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.VALUES.size()));
-                    dump.add(robotDetail);
-                }
+        try {
+            for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
+                tossNewRobotDetails();
+                waitNextNight();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-            synchronized (night.getLock()) {
-                try {
-                    night.getLock().wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+    private void tossNewRobotDetails() {
+        int countForTossNewRobotDetails = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
+        List<RobotDetail> tossedDetails = new ArrayList<>(MAX_DETAILS_COUNT);
+        synchronized (dump.getLock()) {
+            for (int j = 0; j < countForTossNewRobotDetails ; j++) {
+                var robotDetail = RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.VALUES.size()));
+                tossedDetails.add(dump.add(robotDetail));
             }
         }
+        System.out.printf("Factory tossed out %d new robot details: %s\n", countForTossNewRobotDetails, tossedDetails);
+    }
+
+    private void waitNextNight() throws InterruptedException {
+        synchronized (night.getLock()) {
+            night.getLock().wait();
+        }
+    }
+
+    public Dump getDump() {
+        return dump;
     }
 }

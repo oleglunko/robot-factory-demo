@@ -22,29 +22,40 @@ public class Assistant extends Thread {
         this.dump = dump;
     }
 
-    //TODO refactoring - make 2 methods;
     @Override
     public void run() {
-        for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
-            List<RobotDetail> takenDetails = new ArrayList<>();
-            int countOfDetailsToTake = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
-            synchronized (dump.getLock()) {
-                for (int j = 0; j < countOfDetailsToTake; j++) {
-                    var robotDetail = RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.values().length));
-                    takenDetails.add(robotDetail);
-                }
-                dump.removeAll(takenDetails);
+        try {
+            for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
+                List<RobotDetail> takenDetails = getRobotDetails();
+                scientist.takeRobotDetails(takenDetails);
+                waitNextNight();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-            scientist.takeRobotDetails(takenDetails);
-
-            synchronized (night.getLock()) {
-                try {
-                    night.getLock().wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    private List<RobotDetail> getRobotDetails() {
+        int countDetailsToTake = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
+        List<RobotDetail> takenDetails = new ArrayList<>(MAX_DETAILS_COUNT);
+        synchronized (dump.getLock()) {
+            if (dump.size() <= countDetailsToTake) {
+                takenDetails.addAll(dump.removeAll());
+            } else if (dump.isNotEmpty()) {
+                for (int j = 0; j < countDetailsToTake; j++) {
+                    RobotDetail removedDetail = dump.remove(RandomUtil.getValue(dump.size()));
+                    takenDetails.add(removedDetail);
                 }
             }
+            System.out.printf("%s's assistant took  %d next details: %s\n", scientist.getName(), takenDetails.size(), takenDetails);
+        }
+
+        return takenDetails;
+    }
+
+    private void waitNextNight() throws InterruptedException {
+        synchronized (night.getLock()) {
+            night.getLock().wait();
         }
     }
 }

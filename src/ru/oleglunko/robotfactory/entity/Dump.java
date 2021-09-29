@@ -1,5 +1,6 @@
 package ru.oleglunko.robotfactory.entity;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,12 +16,27 @@ public class Dump {
         dump.addAll(initRobotDetails);
     }
 
-    public void add(RobotDetail detail) {
+    public RobotDetail add(RobotDetail detail) {
         dump.add(detail);
+        return detail;
     }
 
-    public void removeAll(List<RobotDetail> robotDetails) {
-        dump.removeAll(robotDetails);
+    public List<RobotDetail> removeAll() {
+        List<RobotDetail> removedDetails = new ArrayList<>(dump);
+        dump.clear();
+        return removedDetails;
+    }
+
+    public RobotDetail remove(int index) {
+        return dump.remove(index);
+    }
+
+    public int size() {
+        return dump.size();
+    }
+
+    public boolean isNotEmpty() {
+        return !dump.isEmpty();
     }
 
     public Object getLock() {
