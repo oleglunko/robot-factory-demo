@@ -47,6 +47,7 @@ public class Assistant extends Thread {
                     takenDetails.add(removedDetail);
                 }
             }
+
             if (takenDetails.isEmpty()) {
                 System.out.printf("%s's assistant didn't take details\n", scientist.getName());
             } else {

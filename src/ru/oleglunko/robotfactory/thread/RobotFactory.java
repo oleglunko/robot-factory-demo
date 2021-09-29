@@ -14,16 +14,16 @@ public class RobotFactory extends Thread {
     private final Night night;
     private final Dump dump;
 
-    public RobotFactory(Night night, List<RobotDetail> initRobotDetails) {
+    public RobotFactory(Night night, List<RobotDetail> initialRobotDetails) {
         this.night = night;
-        this.dump = new Dump(initRobotDetails);
+        this.dump = new Dump(initialRobotDetails);
     }
 
     @Override
     public void run() {
         try {
             for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
-                tossNewRobotDetails();
+                tossNewRobotDetailsToDump();
                 waitNextNight();
             }
         } catch (InterruptedException e) {
@@ -31,16 +31,16 @@ public class RobotFactory extends Thread {
         }
     }
 
-    private void tossNewRobotDetails() {
-        int countForTossNewRobotDetails = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
+    private void tossNewRobotDetailsToDump() {
+        int countForTossNewDetails = RandomUtil.getValueWithoutZero(MAX_DETAILS_COUNT);
         List<RobotDetail> tossedDetails = new ArrayList<>(MAX_DETAILS_COUNT);
         synchronized (dump.getLock()) {
-            for (int j = 0; j < countForTossNewRobotDetails ; j++) {
-                var robotDetail = RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.VALUES.size()));
+            for (int j = 0; j < countForTossNewDetails; j++) {
+                RobotDetail robotDetail = RandomUtil.getRandomRobotDetail();
                 tossedDetails.add(dump.add(robotDetail));
             }
         }
-        System.out.printf("Factory tossed out %d new robot details: %s\n", countForTossNewRobotDetails, tossedDetails);
+        System.out.printf("Factory tossed out %d new robot details: %s\n", countForTossNewDetails, tossedDetails);
     }
 
     private void waitNextNight() throws InterruptedException {

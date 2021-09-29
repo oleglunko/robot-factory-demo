@@ -1,19 +1,18 @@
 package ru.oleglunko.robotfactory.entity;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Dump {
 
     private final Object lock = new Object();
-    private final List<RobotDetail> dump = new LinkedList<>();
+    private final List<RobotDetail> dump = new ArrayList<>();
 
     public Dump() {
     }
 
-    public Dump(List<RobotDetail> initRobotDetails) {
-        dump.addAll(initRobotDetails);
+    public Dump(List<RobotDetail> initialRobotDetails) {
+        dump.addAll(initialRobotDetails);
     }
 
     public RobotDetail add(RobotDetail detail) {

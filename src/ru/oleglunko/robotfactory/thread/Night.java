@@ -1,7 +1,6 @@
 package ru.oleglunko.robotfactory.thread;
 
 import ru.oleglunko.robotfactory.util.NightConstant;
-import ru.oleglunko.robotfactory.util.RandomUtil;
 
 public class Night extends Thread {
 

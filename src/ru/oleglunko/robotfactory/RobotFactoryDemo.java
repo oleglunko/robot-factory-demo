@@ -6,52 +6,56 @@ import ru.oleglunko.robotfactory.thread.Assistant;
 import ru.oleglunko.robotfactory.thread.Night;
 import ru.oleglunko.robotfactory.thread.RobotFactory;
 import ru.oleglunko.robotfactory.util.RandomUtil;
+import ru.oleglunko.robotfactory.util.ThreadUtil;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RobotFactoryDemo {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Night night = new Night();
-        var robotFactory = new RobotFactory(night, getInitRobortDetails());
-        var firstAssistant = new Assistant(new Scientist("Max"), night, robotFactory.getDump());
-        var secondAssistant = new Assistant(new Scientist("Andrew"), night, robotFactory.getDump());
+        var robotFactory = new RobotFactory(night, getInitRobotDetails());
+        var firstScientist = new Scientist("Max");
+        var secondScientist = new Scientist("Andrew");
+        var firstAssistant = new Assistant(firstScientist, night, robotFactory.getDump());
+        var secondAssistant = new Assistant(secondScientist, night, robotFactory.getDump());
 
-        night.start();
-        robotFactory.start();
-        firstAssistant.start();
-        secondAssistant.start();
+        ThreadUtil.startThreads(night, robotFactory, firstAssistant, secondAssistant);
+        ThreadUtil.joinThreads(night, robotFactory, firstAssistant, secondAssistant);
 
+        showResults(firstScientist, secondScientist);
 
-        night.join();
-        robotFactory.join();
-        firstAssistant.join();
-        secondAssistant.join();
+    }
 
-        var firstScientist = firstAssistant.getScientist();
-        var secondScientist = secondAssistant.getScientist();
+    private static List<RobotDetail> getInitRobotDetails() {
+        return IntStream.range(0, 20)
+                .map(it -> RandomUtil.getValue(RobotDetail.VALUES.size()))
+                .mapToObj(RobotDetail.VALUES::get)
+                .collect(Collectors.toList());
+    }
+
+    private static void showResults(Scientist firstScientist, Scientist secondScientist) {
+        int amountOfRobotsForFirstScientist = firstScientist.buildRobot().size();
+        int amountOfRobotsForSecondScientist = secondScientist.buildRobot().size();
+
         System.out.println("==========================================");
         System.out.println("RESULTS:");
-        System.out.printf("%s built %d robots!\n", firstScientist.getName(), firstScientist.buildRobot().size());
-        System.out.printf("%s built %d robots!\n", secondScientist.getName(), secondScientist.buildRobot().size());
+        System.out.printf("%s built %d robots!\n", firstScientist.getName(), amountOfRobotsForFirstScientist);
+        System.out.printf("%s built %d robots!\n", secondScientist.getName(), amountOfRobotsForSecondScientist);
 
-        if (firstScientist.buildRobot().size() == secondScientist.buildRobot().size()) {
-            System.out.printf("There are no losers!");
-        } else if (firstScientist.buildRobot().size() > secondScientist.buildRobot().size()) {
+        determineWinner(firstScientist, secondScientist, amountOfRobotsForFirstScientist, amountOfRobotsForSecondScientist);
+    }
+
+    private static void determineWinner(Scientist firstScientist, Scientist secondScientist,
+                                        int amountOfRobotsForFirstScientist, int amountOfRobotsForSecondScientist) {
+        if (amountOfRobotsForFirstScientist == amountOfRobotsForSecondScientist) {
+            System.out.println("There are no losers!");
+        } else if (amountOfRobotsForFirstScientist > amountOfRobotsForSecondScientist) {
             System.out.printf("Congrats! %s won!", firstScientist.getName());
         } else {
             System.out.printf("Congrats! %s won!", secondScientist.getName());
         }
-
-    }
-
-    //TODO refactoring - will make it with Stream
-    private static List<RobotDetail> getInitRobortDetails() {
-        List<RobotDetail> initRobotDetails = new LinkedList<>();
-        for (int i = 0; i < 20; i++) {
-            initRobotDetails.add(RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.values().length)));
-        }
-        return initRobotDetails;
     }
 }

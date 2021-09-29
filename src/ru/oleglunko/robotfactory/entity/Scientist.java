@@ -2,10 +2,12 @@ package ru.oleglunko.robotfactory.entity;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Scientist {
 
-    private final Map<RobotDetail, Integer> robotDetails = new HashMap<>();
+    private final Map<RobotDetail, Integer> robotDetails = new EnumMap<>(RobotDetail.class);
     private final String name;
 
     public Scientist(String name) {
@@ -16,16 +18,15 @@ public class Scientist {
         list.forEach(detail -> robotDetails.merge(detail, 1, Integer::sum));
     }
 
-    public List<Robot> buildRobot() {
-        List<Robot> robots = new LinkedList<>();
+    public List buildRobot() {
         if (isEnoughPartsToBuild()) {
             int robotAmount = robotDetails.values().stream().min(Integer::compareTo).orElse(0);
-            for (int i = 0; i < robotAmount; i++) {
-                robots.add(new Robot());
-            }
+            return IntStream.range(0, robotAmount)
+                    .mapToObj(value -> new Robot())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.EMPTY_LIST;
         }
-
-        return robots;
     }
 
     private boolean isEnoughPartsToBuild() {
