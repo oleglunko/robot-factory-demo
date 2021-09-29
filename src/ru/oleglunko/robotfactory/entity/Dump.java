@@ -19,6 +19,10 @@ public class Dump {
         dump.add(detail);
     }
 
+    public void removeAll(List<RobotDetail> robotDetails) {
+        dump.removeAll(robotDetails);
+    }
+
     public Object getLock() {
         return lock;
     }

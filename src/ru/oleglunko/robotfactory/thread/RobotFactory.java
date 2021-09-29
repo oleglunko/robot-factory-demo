@@ -9,7 +9,7 @@ import java.util.List;
 
 public class RobotFactory extends Thread {
 
-    private static final int MAX_DETAIL_COUNT = 4;
+    private static final int MAX_DETAILS_COUNT = 4;
     private final Night night;
     private final Dump dump;
 
@@ -23,7 +23,7 @@ public class RobotFactory extends Thread {
     public void run() {
         for (int i = 0; i < NightConstant.NIGHTS_AMOUNT; i++) {
             synchronized (dump.getLock()) {
-                int countToTossNewRobotDetails = RandomUtil.getValue(MAX_DETAIL_COUNT);
+                int countToTossNewRobotDetails = RandomUtil.getValue(MAX_DETAILS_COUNT);
                 for (int j = 0; j < countToTossNewRobotDetails ; j++) {
                     var robotDetail = RobotDetail.VALUES.get(RandomUtil.getValue(RobotDetail.VALUES.size()));
                     dump.add(robotDetail);
